@@ -1,22 +1,13 @@
 # Golang build
-FROM golang:1.23 AS build
+FROM golang:1.23
 
-ARG TARGETPLATFORM
-ARG BUILDPLATFORM
-ARG TARGETOS
-ARG TARGETARCH
-
-WORKDIR /build
+WORKDIR /app
 
 COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
-RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -ldflags="-w -s" -o bookshop ./cmd/bookshop
-
-FROM scratch
-WORKDIR /app/
-COPY --from=build /build/bookshop /app/bookshop
+RUN go build -o bookshop ./cmd/bookshop
 
 EXPOSE 8080
 
